@@ -57,7 +57,9 @@ export const getBills = async (store) => {
   try {
     const snapshot = await store.bills().list()
 
-    const bills = snapshot.map(doc => {
+    const bills = snapshot
+      .sort((a, b) => (a.date < b.date ? 1 : -1))
+      .map(doc => {
       try {
         return {
           ...doc,
