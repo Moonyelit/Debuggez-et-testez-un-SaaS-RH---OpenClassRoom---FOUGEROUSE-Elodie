@@ -82,7 +82,7 @@ const renderDashboard = async (rootDiv) => {
   try {
     const bills = await getBillsAllUsers(store)
     rootDiv.innerHTML = DashboardUI({ data: { bills } })
-    initDashboardPage({ document, onNavigate: window.onNavigate, bills, localStorage })
+    initDashboardPage({ document, onNavigate: window.onNavigate, store, bills, localStorage })
   } catch (error) {
     rootDiv.innerHTML = ROUTES({ pathname: ROUTES_PATH['Dashboard'], error })
   }

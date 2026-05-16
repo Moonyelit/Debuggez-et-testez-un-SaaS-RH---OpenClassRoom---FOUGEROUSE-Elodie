@@ -89,7 +89,7 @@ export const getStatus = (index) => {
 /**
  * Initialise la page Dashboard - Attache les event listeners
  */
-export const initDashboardPage = ({ document, onNavigate, bills, localStorage }) => {
+export const initDashboardPage = ({ document, onNavigate, store, bills, localStorage }) => {
   if (!document) {
     console.log('Dashboard: document is MISSING')
     return
@@ -100,11 +100,11 @@ export const initDashboardPage = ({ document, onNavigate, bills, localStorage })
   const arrowIcon3 = document.querySelector('#arrow-icon3')
 
   if (arrowIcon1) arrowIcon1.addEventListener('click', (e) =>
-    handleShowTickets(e, bills, 1, document))
+    handleShowTickets(e, bills, 1, document, store, onNavigate))
   if (arrowIcon2) arrowIcon2.addEventListener('click', (e) =>
-    handleShowTickets(e, bills, 2, document))
+    handleShowTickets(e, bills, 2, document, store, onNavigate))
   if (arrowIcon3) arrowIcon3.addEventListener('click', (e) =>
-    handleShowTickets(e, bills, 3, document))
+    handleShowTickets(e, bills, 3, document, store, onNavigate))
 
   new Logout({ localStorage, onNavigate, document })
 }
@@ -132,7 +132,7 @@ export const handleClickIconEye = (document) => {
  * Gère l'édition d'un ticket
  * Exported for testing purposes
  */
-export const handleEditTicket = (e, bill, bills, document) => {
+export const handleEditTicket = (e, bill, bills, document, store, onNavigate) => {
   if (dashboardState.counter === undefined || dashboardState.id !== bill.id) {
     dashboardState.counter = 0
   }
@@ -167,12 +167,16 @@ export const handleEditTicket = (e, bill, bills, document) => {
   if (iconEye) iconEye.addEventListener('click', () => handleClickIconEye(document))
 
   const btnAccept = document.querySelector('#btn-accept-bill')
-  if (btnAccept) btnAccept.addEventListener('click', (e) =>
-    handleAcceptSubmit(e, bill, document))
+  if (btnAccept) btnAccept.addEventListener('click', (e) => {
+    const newBill = handleAcceptSubmit(e, bill, document)
+    updateBill(newBill, store).then(() => onNavigate(ROUTES_PATH['Dashboard']))
+  })
 
   const btnRefuse = document.querySelector('#btn-refuse-bill')
-  if (btnRefuse) btnRefuse.addEventListener('click', (e) =>
-    handleRefuseSubmit(e, bill, document))
+  if (btnRefuse) btnRefuse.addEventListener('click', (e) => {
+    const newBill = handleRefuseSubmit(e, bill, document)
+    updateBill(newBill, store).then(() => onNavigate(ROUTES_PATH['Dashboard']))
+  })
 }
 
 /**
@@ -245,7 +249,7 @@ export const handleRefuseSubmit = (e, bill, document) => {
  * Gère l'affichage/masquage des tickets
  * Exported for testing purposes
  */
-export const handleShowTickets = (e, bills, index, document) => {
+export const handleShowTickets = (e, bills, index, document, store, onNavigate) => {
   if (dashboardState.counter === undefined || dashboardState.index !== index) {
     dashboardState.counter = 0
   }
@@ -277,7 +281,7 @@ export const handleShowTickets = (e, bills, index, document) => {
       const freshBill = openBill.cloneNode(true)
       openBill.parentNode.replaceChild(freshBill, openBill)
       freshBill.addEventListener('click', (e) =>
-        handleEditTicket(e, bill, bills, document))
+        handleEditTicket(e, bill, bills, document, store, onNavigate))
     }
   })
 
