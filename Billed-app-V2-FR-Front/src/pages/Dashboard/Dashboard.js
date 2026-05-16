@@ -273,8 +273,12 @@ export const handleShowTickets = (e, bills, index, document) => {
 
   bills.forEach(bill => {
     const openBill = document.querySelector(`#open-bill${bill.id}`)
-    if (openBill) openBill.addEventListener('click', (e) =>
-      handleEditTicket(e, bill, bills, document))
+    if (openBill) {
+      const freshBill = openBill.cloneNode(true)
+      openBill.parentNode.replaceChild(freshBill, openBill)
+      freshBill.addEventListener('click', (e) =>
+        handleEditTicket(e, bill, bills, document))
+    }
   })
 
   return bills
