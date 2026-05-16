@@ -31,6 +31,17 @@ const handleChangeFile = (e, { store, localStorage }) => {
   const file = document.querySelector(`input[data-testid="file"]`).files[0]
   const filePath = e.target.value.split(/\\/g)
   const fileName = filePath[filePath.length - 1]
+  const allowedExtensions = ['jpg', 'jpeg', 'png']
+  const extension = fileName.split('.').pop().toLowerCase()
+  const errorMessage = document.querySelector('[data-testid="file-error"]')
+
+  if (!allowedExtensions.includes(extension)) {
+    e.target.value = ''
+    if (errorMessage) errorMessage.style.display = 'block'
+    return
+  }
+
+  if (errorMessage) errorMessage.style.display = 'none'
 
   const formData = new FormData()
   const email = JSON.parse(localStorage.getItem("user")).email
